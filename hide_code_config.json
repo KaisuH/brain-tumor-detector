@@ -1,0 +1,10 @@
+{
+  "TagRemovePreprocessor": {
+    "enabled": true,
+    "remove_input_tags": ["hide_input"]
+  },
+  "Exporter": {
+    "exclude_input_prompt": true,
+    "exclude_output_prompt": true
+  }
+}

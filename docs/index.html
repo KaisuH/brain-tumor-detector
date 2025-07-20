@@ -7529,8 +7529,7 @@ a.anchor-link {
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <p><a href="https://colab.research.google.com/github/KaisuH/Emotion-AI/blob/main/Emotion_AI.ipynb" target="_parent"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg"/></a></p>
 </div>
 </div>
@@ -7540,8 +7539,7 @@ a.anchor-link {
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h1 id="Brain-tumor-detector">Brain tumor detector<a class="anchor-link" href="#Brain-tumor-detector">¶</a></h1><h2 id="Nutshell">Nutshell<a class="anchor-link" href="#Nutshell">¶</a></h2><p>As of now this project is under development.</p>
 <p>In this project I build a program that detects and localizes cancer from images of human brains, as explained on the course <em>Modern Artificial Intelligence</em>, lectured by Dr. Ryan Ahmed, Ph.D. MBA.</p>
 <p>The program will train two models which will</p>
@@ -7553,152 +7551,15 @@ a.anchor-link {
 </div>
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs celltag_hide_input">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [1]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-python"><pre><span></span><span class="c1">#HIDE</span>
-<span class="c1"># @title Loading libraries and setting up drive</span>
-<span class="o">%%</span><span class="n">capture</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">google.colab</span><span class="w"> </span><span class="kn">import</span> <span class="n">drive</span>
-<span class="n">drive</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s1">'/content/drive'</span><span class="p">)</span>
-
-<span class="o">%</span><span class="n">cd</span> <span class="s1">'/content/drive/MyDrive/Colab Notebooks/brain-tumor-detector/'</span>
-
-<span class="c1"># Import the necessary packages</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">PIL</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">cv2</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="kn">import</span> <span class="n">keras</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras.applications</span><span class="w"> </span><span class="kn">import</span> <span class="n">DenseNet121</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">load_model</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras.initializers</span><span class="w"> </span><span class="kn">import</span> <span class="n">glorot_uniform</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_model</span><span class="p">,</span> <span class="n">to_categorical</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras.callbacks</span><span class="w"> </span><span class="kn">import</span> <span class="n">ReduceLROnPlateau</span><span class="p">,</span> <span class="n">EarlyStopping</span><span class="p">,</span> <span class="n">ModelCheckpoint</span><span class="p">,</span> <span class="n">LearningRateScheduler</span><span class="p">,</span> <span class="n">Callback</span><span class="p">,</span> <span class="n">CSVLogger</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras.layers</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras.layers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Conv2D</span><span class="p">,</span> <span class="n">MaxPooling2D</span><span class="p">,</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">Flatten</span><span class="p">,</span> <span class="n">ZeroPadding2D</span><span class="p">,</span> <span class="n">BatchNormalization</span><span class="p">,</span> <span class="n">Activation</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Add</span><span class="p">,</span> <span class="n">AveragePooling2D</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras.initializers</span><span class="w"> </span><span class="kn">import</span> <span class="n">glorot_uniform</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras.preprocessing.image</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImageDataGenerator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras</span><span class="w"> </span><span class="kn">import</span> <span class="n">layers</span><span class="p">,</span> <span class="n">optimizers</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras.applications.resnet50</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResNet50</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras.layers</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras</span><span class="w"> </span><span class="kn">import</span> <span class="n">backend</span> <span class="k">as</span> <span class="n">K</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">keras</span><span class="w"> </span><span class="kn">import</span> <span class="n">optimizers</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.model_selection</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_test_split</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">confusion_matrix</span><span class="p">,</span> <span class="n">classification_report</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">google.colab.patches</span><span class="w"> </span><span class="kn">import</span> <span class="n">cv2_imshow</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">graphviz</span><span class="w"> </span><span class="kn">import</span> <span class="n">Digraph</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">Javascript</span><span class="p">,</span> <span class="n">HTML</span><span class="p">,</span> <span class="n">Image</span><span class="p">,</span> <span class="n">display</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.ndimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">rotate</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
-
-<span class="n">retrain_model</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># ← Change to True when you want to retrain</span>
-<span class="n">rerun_example</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># ← Change to True when you want to rerun the example</span>
-<span class="n">push_git</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># &lt;- Change this to True when you wan to push the changes</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs celltag_hide_input">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [52]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-python"><pre><span></span><span class="c1">#HIDE</span>
-<span class="n">push_git</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="c1"># @title GIT commands</span>
-<span class="c1"># Add changes</span>
-<span class="k">if</span> <span class="n">push_git</span><span class="p">:</span>
-  <span class="err">!</span><span class="n">git</span> <span class="n">add</span> <span class="o">.</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs celltag_hide_input">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [53]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-python"><pre><span></span><span class="c1">#HIDE</span>
-<span class="o">%%</span><span class="n">capture</span>
-<span class="c1"># Commit changes and remember to change commit message</span>
-<span class="k">if</span> <span class="n">push_git</span><span class="p">:</span>
-  <span class="err">!</span><span class="n">git</span> <span class="n">commit</span> <span class="o">-</span><span class="n">m</span> <span class="s2">"Clean up"</span> <span class="c1">#Remember to change commit message</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs celltag_hide_input">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [54]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-python"><pre><span></span><span class="c1">#HIDE</span>
-<span class="o">%%</span><span class="n">capture</span>
-<span class="c1"># Push changes</span>
-<span class="k">if</span> <span class="n">push_git</span><span class="p">:</span>
-  <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'/content/drive/MyDrive/tokens/token1.txt'</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-      <span class="n">token</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-
-  <span class="err">!</span><span class="n">git</span> <span class="n">push</span> <span class="o">--</span><span class="n">force</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="err">$</span><span class="n">token</span><span class="nd">@github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">KaisuH</span><span class="o">/</span><span class="n">brain</span><span class="o">-</span><span class="n">tumor</span><span class="o">-</span><span class="n">detector</span><span class="o">.</span><span class="n">git</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs celltag_hide_input">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-python"><pre><span></span><span class="c1">#HIDE</span>
-<span class="c1">#for removing the last line in gitignore</span>
-<span class="c1">#!sed -i '$d' .gitignore</span>
-<span class="c1">#for printing the gitignore</span>
-<span class="c1">#!cat .gitignore</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-python"><pre><span></span><span class="n">make_new_branch</span> <span class="o">=</span> <span class="kc">False</span>
@@ -7724,116 +7585,8 @@ a.anchor-link {
 </div>
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs celltag_hide_input">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-python"><pre><span></span><span class="c1">#HIDE</span>
-<span class="c1"># @title Producing the final file</span>
-<span class="o">%%</span><span class="n">capture</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">nbformat</span>
-
-<span class="n">nb_name</span> <span class="o">=</span> <span class="s2">"master.ipynb"</span>        <span class="c1"># original notebook</span>
-<span class="n">out_nb_name</span> <span class="o">=</span> <span class="s2">"master_tagged.ipynb"</span>  <span class="c1"># new notebook with tags</span>
-
-<span class="n">nb</span> <span class="o">=</span> <span class="n">nbformat</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">nb_name</span><span class="p">,</span> <span class="n">as_version</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-
-<span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">nb</span><span class="o">.</span><span class="n">cells</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">cell</span><span class="o">.</span><span class="n">cell_type</span> <span class="o">==</span> <span class="s1">'code'</span><span class="p">:</span>
-        <span class="c1"># Check if the first line of the cell source is #HIDE</span>
-        <span class="n">first_line</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">first_line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'#HIDE'</span><span class="p">):</span>
-            <span class="n">cell</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">'tags'</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'hide_input'</span><span class="p">)</span>
-<span class="n">nbformat</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">nb</span><span class="p">,</span> <span class="n">out_nb_name</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs celltag_hide_input">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-python"><pre><span></span><span class="c1">#HIDE</span>
-<span class="o">%%</span><span class="n">capture</span>
-<span class="c1">#Run this code to generate the tagged file</span>
-<span class="o">%%</span><span class="n">writefile</span> <span class="n">hide_code_config</span><span class="o">.</span><span class="n">json</span>
-<span class="p">{</span>
-  <span class="s2">"TagRemovePreprocessor"</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">"enabled"</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
-    <span class="s2">"remove_input_tags"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"hide_input"</span><span class="p">]</span>
-  <span class="p">},</span>
-  <span class="s2">"Exporter"</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">"exclude_input_prompt"</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
-    <span class="s2">"exclude_output_prompt"</span><span class="p">:</span> <span class="n">true</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs celltag_hide_input">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-python"><pre><span></span><span class="c1">#HIDE</span>
-<span class="o">%%</span><span class="n">capture</span>
-<span class="c1"># Run this line to produce the output</span>
-<span class="err">!</span><span class="n">jupyter</span> <span class="n">nbconvert</span> <span class="o">--</span><span class="n">to</span> <span class="n">html</span> <span class="o">--</span><span class="n">config</span> <span class="n">hide_code_config</span><span class="o">.</span><span class="n">json</span> \
-    <span class="o">--</span><span class="n">output</span> <span class="s2">"docs/index.html"</span> <span class="s2">"master_tagged.ipynb"</span>
-
-
-<span class="c1">### Renaming the document to produce a nicer name in web tab ###</span>
-<span class="c1"># After nbconvert generates the HTML:</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"docs/index.html"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">html_content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-
-<span class="c1"># Find and replace the title tag content</span>
-<span class="n">new_title</span> <span class="o">=</span> <span class="s2">"Brain tumor detector"</span>  <span class="c1"># Your desired title</span>
-<span class="n">html_content</span> <span class="o">=</span> <span class="n">html_content</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"&lt;title&gt;master_tagged&lt;/title&gt;"</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"&lt;title&gt;</span><span class="si">{</span><span class="n">new_title</span><span class="si">}</span><span class="s2">&lt;/title&gt;"</span><span class="p">)</span>
-
-<span class="c1"># Insert CSS just before &lt;/head&gt; to ensure it loads after default styles</span>
-<span class="n">style_snippet</span> <span class="o">=</span> <span class="s2">"""</span>
-<span class="s2">&lt;style&gt;</span>
-<span class="s2">/* Force horizontal scroll on wide code cells */</span>
-<span class="s2">.jp-RenderedText pre,</span>
-<span class="s2">.jp-RenderedHTMLCommon pre,</span>
-<span class="s2">.jp-Cell .jp-Cell-inputWrapper .CodeMirror-lines,</span>
-<span class="s2">.jp-Cell .jp-Cell-inputWrapper pre {</span>
-<span class="s2">  white-space: pre !important;</span>
-<span class="s2">  overflow-x: auto !important;</span>
-<span class="s2">  max-width: 100% !important;</span>
-<span class="s2">  display: block !important;</span>
-<span class="s2">}</span>
-<span class="s2">&lt;/style&gt;</span>
-<span class="s2">"""</span>
-
-<span class="c1"># Insert style snippet at the end of &lt;head&gt;, or if you prefer, after &lt;head&gt;:</span>
-<span class="n">html_content</span> <span class="o">=</span> <span class="n">html_content</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-    <span class="s2">"&lt;/head&gt;"</span><span class="p">,</span>
-    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">style_snippet</span><span class="si">}</span><span class="se">\n</span><span class="s2">&lt;/head&gt;"</span>
-<span class="p">)</span>
-
-<span class="c1"># Save the modified HTML</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"docs/index.html"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">html_content</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
 </div>
 </main>
 </body>
